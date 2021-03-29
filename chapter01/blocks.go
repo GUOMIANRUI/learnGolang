@@ -14,7 +14,7 @@ func main() {
 		fmt.Println(inner)
 		{
 			inner2 := 3
-			outer = 5
+			outer := 5
 			fmt.Println(outer, inner, inner2)
 		}
 	}
