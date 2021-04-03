@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	maxAuth = 3
+	maxAuth  = 3
 	password = "123456"
 )
 
@@ -35,6 +35,13 @@ const (
 	提示输入密码，如果密码输出3次都失败，提示并退出
 	如果密码成功，再进行用户管理操作
 */
+
+func inputString(prompt string) string {
+	var input string
+	fmt.Print(prompt)
+	fmt.Scan(&input)
+	return input
+}
 
 func auth() bool {
 	var input string
@@ -73,49 +80,63 @@ func getId(users map[int]map[string]string) int { // 获取users里面最大的i
 // func add(pk int, users map[int]map[string]string) {
 func add(users map[int]map[string]string) {
 	id := getId(users)
+	user := inputUser()
+	users[id] = user
+	fmt.Println("添加成功")
 	// 	var (
-// 		id   string = strconv.Itoa(pk) // 或 fmt.Sprintf("%d", ok) 将int变成str
-// 		name string
-// 		age  string
-// 		tel  string
-// 		addr string
-// 	)
-// 	fmt.Print("请输入姓名：")
-// 	fmt.Scan(&name)
+	// 		id   string = strconv.Itoa(pk) // 或 fmt.Sprintf("%d", ok) 将int变成str
+	// 		name string
+	// 		age  string
+	// 		tel  string
+	// 		addr string
+	// 	)
+	// 	fmt.Print("请输入姓名：")
+	// 	fmt.Scan(&name)
 
-// 	fmt.Print("请输入年龄：")
-// 	fmt.Scan(&age)
+	// 	fmt.Print("请输入年龄：")
+	// 	fmt.Scan(&age)
 
-// 	fmt.Print("请输入联系方式：")
-// 	fmt.Scan(&tel)
+	// 	fmt.Print("请输入联系方式：")
+	// 	fmt.Scan(&tel)
 
-// 	fmt.Print("请输入家庭地址：")
-// 	fmt.Scan(&addr)
+	// 	fmt.Print("请输入家庭地址：")
+	// 	fmt.Scan(&addr)
 
-// 	users[id] = map[string]string{
-// 		"id":   id,
-// 		"name": name,
-// 		"age":  age,
-// 		"tel":  tel,
-// 		"addr": addr,
-// 	}
-// }
+	// 	users[id] = map[string]string{
+	// 		"id":   id,
+	// 		"name": name,
+	// 		"age":  age,
+	// 		"tel":  tel,
+	// 		"addr": addr,
+	// 	}
+}
+
+func printUser(pk int, user map[string]string) {
+	fmt.Println("ID:", pk)
+	fmt.Println("名字:", user["name"])
+	fmt.Println("年龄:", user["age"])
+	fmt.Println("联系方式:", user["tel"])
+	fmt.Println("联系地址:", user["addr"])
+}
 
 // 查询用户
 // q = "" 显示全部
 // 非空， 名称 电话 住址 任意一个属性中包含q内容的显示
 func query(users map[int]map[string]string) {
-	var q string
+	// var q string
+	// fmt.Print("请输入查询信息：")
+	// fmt.Scan(&q)
+	q := inputString("请输入查询信息：")
 
-	fmt.Print("请输入查询信息：")
-	fmt.Scan(&q)
 	title := fmt.Sprintf("%5s|%20s|%5s|%20s|%50s", "ID", "Name", "Age", "Tel", "Addr")
 	fmt.Println(title)
 	fmt.Println(strings.Repeat("-", len(title)))
-	for _, user := range users {
-		if q == "" || strings.Contains(user["name"], q) || strings.Contains(user["tel"], q) || strings.Contains(user["addr"], q) {
-			fmt.Printf("%5s|%20s|%5s|%20s|%50s", user["id"], user["name"], user["age"], user["tel"], user["addr"])
+	// 注意  下面遍历出来的是 k --> [int]  v --> [string]string    比如 k 为 1   v 为{"name":"xiaoming","age":"20"}
+	for k, v := range users {
+		if strings.Contains(v["name"], q) || strings.Contains(v["tel"], q) || strings.Contains(v["addr"], q) {
+			fmt.Printf("%5d|%20s|%5s|%20s|%50s", k, v["name"], v["age"], v["tel"], v["addr"])
 			fmt.Println()
+			fmt.Println(strings.Repeat("-", len(title)))
 		}
 	}
 }
@@ -123,14 +144,15 @@ func query(users map[int]map[string]string) {
 // 修改
 func modify(users map[int]map[string]string) {
 	idString := inputString("请输入修改用户ID：")
-	if id, err := idString; err == nil { // 字符串转换为int
-		if user, ok := users[id]; ok {
+	if id, err := strconv.Atoi(idString); err == nil { // 字符串转换为int
+		if user, ok := users[id]; ok { // 判断一个key是否在一个映射里，赋值 用第二个值判断
 			fmt.Println("将修改的用户信息：")
-			fmt.Println(user)
+			// fmt.Println(user)
+			printUser(id, user)
 			input := inputString("确定修改(Y/N)?")
 			if input == "y" || input == "Y" {
 				user := inputUser()
-				user[id] = user
+				users[id] = user
 				fmt.Println("修改成功")
 			}
 		} else {
@@ -143,10 +165,11 @@ func modify(users map[int]map[string]string) {
 
 func del(users map[int]map[string]string) {
 	idString := inputString("请输入删除用户ID：")
-	if id, err := idString; err == nil { // 字符串转换为int
+	if id, err := strconv.Atoi(idString); err == nil { // 字符串转换为int
 		if user, ok := users[id]; ok {
 			fmt.Println("将删除的用户信息：")
-			fmt.Println(user)
+			// fmt.Println(user)
+			printUser(id, user)
 			input := inputString("确定删除(Y/N)?")
 			if input == "y" || input == "Y" {
 				delete(users, id)
@@ -169,40 +192,59 @@ func main() {
 	}
 	fmt.Println("欢迎使用本用户管理系统")
 	users := make(map[int]map[string]string)
-	id := 0
-
+END:
 	for {
-		var op string
+		// var op string
 		fmt.Print(`
 1. 新建用户
 2. 修改用户
 3. 删除用户
 4. 查询用户
 5. 退出
-请输入指令：`)
-		fmt.Scan(&op)
-		switch {
-		case op == "1":
+`)
+		// fmt.Scan(&op)
+		// switch op {
+		switch inputString("请输入指令：") {
+		case "1":
 			fmt.Println("您输入的指令是 新建用户")
 			// id++
 			add(users)
-		case op == "2":
+		case "2":
 			fmt.Println("您输入的指令是 修改用户")
 			modify(users)
-		case op == "3":
+		case "3":
 			fmt.Println("您输入的指令是 删除用户")
 			del(users)
-		case op == "4":
+		case "4":
 			fmt.Println("您输入的指令是 查询用户")
 			query(users)
-		case op == "5":
+		case "5":
 			fmt.Println("您输入的指令是 退出")
-			// break
+			break END // 利用标签跳出for循环
 		default:
 			fmt.Println("指令错误，请重新输入")
 		}
-		if op == "5" {
-			break
-		}
+		// if op == "5" {
+		// 	break
+		// }
 	}
+	// 或定义一个映射建立指令与函数的关系
+	// callbacks := map[string]func(map[int]map[string]string){
+	// 	"1": add,
+	// 	"2": modify,
+	// 	"3": del,
+	// 	"4": query,
+	// }
+	// for {
+	// 	op := inputString("请输入指令：")
+	// 	callback, ok := callbacks[op]
+
+	// 	if ok {
+	// 		callback(users)
+	// 	} else if op == "5" {
+	// 		break
+	// 	} else {
+	// 		fmt.Println("指令错误，请重新输入")
+	// 	}
+	// }
 }

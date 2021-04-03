@@ -13,6 +13,9 @@ func main() {
 	// scores = map[string]int{}
 	scores = map[string]int{"小明": 8, "小王": 9, "小朱": 10}
 	fmt.Println(scores)
+	for a, b := range scores {
+		fmt.Println(a, b)
+	}
 
 	// 还可以通过make函数初始化
 	scores = make(map[string]int)
