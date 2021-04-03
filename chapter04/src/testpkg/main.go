@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 
-	"github.com/GUOMIANRUI/gopkg"
+	"gopkg"
 )
 
 func main() {
-	fmt.Println(gopkg.VERSION)
+	fmt.Println(gopkg.Version)
 }
