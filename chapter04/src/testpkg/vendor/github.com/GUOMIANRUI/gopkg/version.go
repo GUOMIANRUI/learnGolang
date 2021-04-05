@@ -2,7 +2,7 @@ package gopkg
 
 // import "fmt"
 
-const VERSION = 12.0
+const VERSION = 11.0
 
 // func init() {
 // 	fmt.Println("init")
