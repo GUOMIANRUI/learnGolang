@@ -6,5 +6,5 @@ import (
 )
 
 func main() {
-	fmt.Println(os.Args)
+	fmt.Println(os.Args) // 读取传入的参数  是一个切片
 }
