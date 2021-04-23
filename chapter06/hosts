@@ -1,0 +1,10 @@
+127.0.0.1 VM-0-14-centos VM-0-14-centos
+127.0.0.1 localhost.localdomain localhost
+127.0.0.1 localhost4.localdomain4 localhost4
+
+::1 VM-0-14-centos VM-0-14-centos
+::1 localhost.localdomain localhost
+::1 localhost6.localdomain6 localhost6
+
+49.234.26.139 test.jenkins.com
+180.163.84.151 test.tianyiyun.com
