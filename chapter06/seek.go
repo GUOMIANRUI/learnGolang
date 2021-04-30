@@ -14,6 +14,7 @@ func main() {
 	fmt.Println(n, bytes[:n])
 
 	//seek()有两个参数： 偏移量 相对位置(文件首0 当前位置1 文件末尾2)
+	//-5 向前偏移 5 向后偏移
 	//文件首0 os.SEEK_SET
 	//当前位置1 os.SEEK_CUR
 	//文件末尾2 os.SEEK_END

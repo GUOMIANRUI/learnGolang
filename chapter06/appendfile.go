@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -14,13 +14,9 @@ func main() {
 	fmt.Println(file, err)
 
 	if err == nil {
-		// file.WriteString(strconv.FormatInt(time.Now().Unix(), 10)) // strconv.FormatInt int64-->string
-		// file.WriteString("\n")
-		// file.Close()
-
-		// 先不关文件 将内容写到日志里面
-		log.SetOutput(file)
-		log.Print(time.Now().Unix())
+		file.WriteString(strconv.FormatInt(time.Now().Unix(), 10)) // strconv.FormatInt int64-->string
+		file.WriteString("\n")
 		file.Close()
+
 	}
 }
