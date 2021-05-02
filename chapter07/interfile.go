@@ -13,7 +13,8 @@ type EmailSender struct {
 }
 
 // 这个结构体再定义两个方法
-func (s EmailSender) Send(to, msg string) error {
+// 谁的方法，是通过接收者定义的，接收者在函数名之前 如(s EmailSender) 就是接收者
+func (s EmailSender) Send(to, msg string) error { // s这个变量是EmailSender类型的  只能由EmailSender这个类型去调用Send
 	fmt.Println("发送邮件给：", to, "消息内容是：", msg)
 	return nil
 }
@@ -39,6 +40,21 @@ func (s SmsSender) SendAll(tos []string, msg string) error {
 	return nil
 }
 
+type WechatSender struct{}
+
+func (s WechatSender) Send(to, msg string) error { // 初始化可以用值也可以指针
+	//因为GO里面会为值类型的方法生成指针的
+	fmt.Println("发送微信给：", to, "微信内容是：", msg)
+	return nil
+}
+
+func (s *WechatSender) SendAll(tos []string, msg string) error { // 初始化的时候只能用指针
+	for _, to := range tos {
+		s.Send(to, msg) // 指针类型的Send方法
+	}
+	return nil
+}
+
 func do(sender Sender) {
 	sender.Send("领导", "工作日志")
 }
@@ -54,5 +70,11 @@ func main() {
 	do(sender)
 
 	sender = EmailSender{}
+	do(sender)
+
+	sender = &EmailSender{} // 可以传入一个指针类型 值类型会自动生成一个指针类型的接收者
+	do(sender)
+
+	sender = &WechatSender{}
 	do(sender)
 }
