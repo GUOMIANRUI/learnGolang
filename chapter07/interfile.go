@@ -2,6 +2,10 @@ package main
 
 import "fmt"
 
+type SignalSender interface {
+	Send(to, msg string) error
+}
+
 type Sender interface { // 在接口中主要定义的是它有哪些方法  对行为的抽象
 	// 面向对象里面的多态，一个类型 根据你传进来的类型的不同，它的行为是不一样的
 	Send(to string, msg string) error
@@ -10,6 +14,7 @@ type Sender interface { // 在接口中主要定义的是它有哪些方法  对
 
 // 定义一个结构体
 type EmailSender struct {
+	SmtpAddr string
 }
 
 // 这个结构体再定义两个方法
@@ -26,7 +31,9 @@ func (s EmailSender) SendAll(tos []string, msg string) error {
 	return nil
 }
 
-type SmsSender struct{}
+type SmsSender struct {
+	SmsAPI string
+}
 
 func (s SmsSender) Send(to, msg string) error {
 	fmt.Println("发送短信给：", to, "短信内容是：", msg)
@@ -40,7 +47,9 @@ func (s SmsSender) SendAll(tos []string, msg string) error {
 	return nil
 }
 
-type WechatSender struct{}
+type WechatSender struct {
+	ID string
+}
 
 func (s WechatSender) Send(to, msg string) error { // 初始化可以用值也可以指针
 	//因为GO里面会为值类型的方法生成指针的
@@ -61,20 +70,61 @@ func do(sender Sender) {
 
 func main() {
 	// var sender Sender = EmailSender{} // sender是一个接口，但类型是EmailSender结构体
-	var sender Sender = SmsSender{} // 后来领导说换成短信直接将上一条注释，加上这一条就好了
-	fmt.Printf("%T %v\n", sender, sender)
+	var sender Sender = SmsSender{"guomianrui"} // 后来领导说换成短信直接将上一条注释，加上这一条就好了
+	// fmt.Println(sender.SmtpAddr) 访问不了
 
-	sender.Send("mianrui", "早上好")
-	sender.SendAll([]string{"牧眠", "牧野"}, "中午好")
+	// fmt.Printf("%T %v\n", sender, sender)
+
+	// sender.Send("mianrui", "早上好")
+	// sender.SendAll([]string{"牧眠", "牧野"}, "中午好")
 
 	do(sender)
 
-	sender = EmailSender{}
+	sender = EmailSender{"123@gmail.com"}
 	do(sender)
 
-	sender = &EmailSender{} // 可以传入一个指针类型 值类型会自动生成一个指针类型的接收者
+	sender = &EmailSender{"123@gmail.com"} // 可以传入一个指针类型 值类型会自动生成一个指针类型的接收者
 	do(sender)
 
-	sender = &WechatSender{}
+	sender = &WechatSender{"shiguojinqian"}
 	do(sender)
+
+	var ssender SignalSender = sender
+	ssender.Send("小白", "你好")
+	// ssender.SendAll([]string{"牧眠", "牧野"}, "中午好") SignalSender接口中没有定义SendAll
+
+	//断言  语法: 接口变量.(Type)
+	// 判断接口变量能不能转换为具体的Type类型
+	sender01, ok := ssender.(Sender)
+	fmt.Printf("%T, %v\n", sender01, ok)          //*main.WechatSender, true
+	sender01.SendAll([]string{"牧眠", "牧野"}, "中午好") // 这时候可以调用SendAll
+
+	// 也可以使用类型断言转换为结构体
+	wsender01, ok := ssender.(*WechatSender) // ssender接口变量是一个指针
+	fmt.Printf("%T, %v\n", wsender01, ok)
+	fmt.Println(wsender01.ID)
+	// esender01, ok := ssender.(*EmailSender)
+	// 转换失败，因为ssender本身是WechatSender类型
+
+	// 接口查询
+	switch ssender.(type) {
+	case EmailSender:
+		fmt.Println("emailsender")
+	case SmsSender:
+		fmt.Println("smssender")
+	case WechatSender:
+		fmt.Println("wechatsender")
+	case *WechatSender:
+		fmt.Println("*wechatsender")
+	}
+
+	sender = EmailSender{"testtest"}
+	switch v := sender.(type) {
+	case EmailSender:
+		fmt.Println("emailsender", v.SmtpAddr)
+	case SmsSender:
+		fmt.Println("smssender", v.SmsAPI)
+	case *WechatSender:
+		fmt.Println("*wechatsender", v.ID)
+	}
 }
